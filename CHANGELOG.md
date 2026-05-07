@@ -2,6 +2,26 @@
 
 All notable changes to Blobverse.
 
+## [1.1.0] — Crash fix + Audio + Juice
+
+### Fixed
+- **Critical: "Something blew up" crash on load.** The global error handler was firing on benign warnings (ResizeObserver loop notifications, cross-origin script messages). Now filters benign errors and only shows the overlay for genuine init failures. Real error messages now display in the overlay so users can report what actually broke.
+- **Tutorial unreachable.** The tutorial overlay had `pointer-events: auto` over the entire jar, blocking users from tapping to drop blobs. Fixed: only the tutorial card itself blocks pointer events; the canvas underneath remains tappable.
+- **Tutorial dead-end.** Step 3 required `firstUpgrade`, but Upgrade is locked until player level 10. Now removed — tutorial is 4 steps, all reachable.
+- **Stale service worker cache.** Bumped SW version from `v1.0.0` to `v1.1.0` so returning visitors automatically get the fixed code instead of the broken cache.
+
+### Added
+- **Web Audio synthesizer** — every sound generated in real-time, no asset files, no copyright concerns. Drop, merge (pitch by tier), combo (rising arpeggio), bomb (filtered noise), freeze (shimmer), magnet, swap, level-up, win fanfare, game-over descent. Plus an ambient cosmic drone music layer with slow LFO modulation.
+- **Music + SFX toggles** in Settings panel.
+- **Camera punch zoom** on tier-4+ merges. Subtle but transformative.
+- **Share button** in game over modal. Generates a 1080×1080 PNG score card via canvas, shares via Web Share API on mobile, copies to clipboard on desktop, falls back to download.
+- **"Clear Cache & Reload" button** in error overlay — automatically unregisters the service worker and clears all caches. Single click recovery.
+
+### Coming in 1.2
+- See `ROADMAP.md` for the honest sequenced plan.
+
+---
+
 ## [1.0.0] — Launch
 
 ### Added
@@ -21,15 +41,3 @@ All notable changes to Blobverse.
 - PWA manifest for installability
 - Vibration support, reduced motion, high contrast
 - Country flag detection from browser locale
-
-### Coming in 1.1
-- Battle Pass (UI in place, content drop pending)
-- Friends list / favorite players
-- Weekend tournaments
-- Ambient audio + sound effects toggle
-- Additional language support
-
-### Coming in 2.0
-- iOS / Android app (via Capacitor)
-- Rewarded ads (optional, web)
-- Cosmetic IAPs (mobile)

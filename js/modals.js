@@ -61,6 +61,7 @@ export function showGameOverModal({ score, best, isNewBest, stage, onPlayAgain, 
       Stage <b style="color:#fde68a">${stage}</b> · ${state.dropCount} drops · ${state.mergeCount} merges
     </div>
     <button class="btn btn-primary" id="btnPlayAgain">Play Again</button>
+    <button class="btn btn-gold" id="btnShare" style="margin-top:6px;">📸 Share Score</button>
     <button class="btn btn-ghost" id="btnExitToMenu">View Stats</button>
   `;
   showModal(html);
@@ -120,6 +121,20 @@ export function showSettingsPanel(sideBody) {
   sideBody.innerHTML = `
     <div class="setting-row">
       <div>
+        <div style="font-weight:800;">Music</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.5);">Cosmic ambient drone</div>
+      </div>
+      <div class="toggle ${s.musicEnabled !== false ? 'on' : ''}" id="tgMusic"></div>
+    </div>
+    <div class="setting-row">
+      <div>
+        <div style="font-weight:800;">Sound Effects</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.5);">Drop, merge, combo</div>
+      </div>
+      <div class="toggle ${s.sfxEnabled !== false ? 'on' : ''}" id="tgSfx"></div>
+    </div>
+    <div class="setting-row">
+      <div>
         <div style="font-weight:800;">Vibration</div>
         <div style="font-size:10px;color:rgba(255,255,255,.5);">Haptic feedback</div>
       </div>
@@ -155,7 +170,7 @@ export function showSettingsPanel(sideBody) {
     <button class="btn btn-ghost" id="resetAll" style="background:rgba(244,63,94,.1);border-color:rgba(244,63,94,.4);color:#fda4af;">Reset All Progress</button>
     <p style="font-size:10px;color:rgba(255,255,255,.45);margin-top:6px;text-align:center;">This wipes your save permanently. Your global leaderboard scores remain.</p>
   `;
-  function bindToggle(id, key) {
+  function bindToggle(id, key, audioCallback) {
     const el = document.getElementById(id);
     if (!el) return;
     el.addEventListener('click', () => {
@@ -163,8 +178,17 @@ export function showSettingsPanel(sideBody) {
       el.classList.toggle('on', state.settings[key]);
       saveSettings();
       applySettings();
+      if (audioCallback) audioCallback(state.settings[key]);
     });
   }
+  // Lazy import to avoid cycle
+  import('./audio.js').then(m => {
+    bindToggle('tgMusic', 'musicEnabled', v => {
+      m.audio.setMusicEnabled(v);
+      if (v) m.audio.startMusic(); else m.audio.stopMusic();
+    });
+    bindToggle('tgSfx', 'sfxEnabled', v => m.audio.setSfxEnabled(v));
+  });
   bindToggle('tgVib', 'vibration');
   bindToggle('tgRM', 'reducedMotion');
   bindToggle('tgHC', 'highContrast');

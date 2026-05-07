@@ -93,7 +93,11 @@ export const state = {
   settings: {
     vibration: true,
     reducedMotion: false,
-    highContrast: false
+    highContrast: false,
+    musicEnabled: true,
+    sfxEnabled: true,
+    musicVolume: 0.35,
+    sfxVolume: 0.55
   },
 
   // Run-time loaded

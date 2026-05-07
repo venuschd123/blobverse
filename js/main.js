@@ -5,7 +5,7 @@ import { CONFIG } from './config.js';
 import { state, getStat } from './state.js';
 import { saveAll, loadAll, loadSettings, saveSettings, vibrate } from './save.js';
 import { initPhysics, getEngine, getWorld, makeBlob, removeBody, clearAllBodies, applyStagePhysics, applyMagnet, applyWind, applyWindForce, applyAntiGravity, pickRandomDropTier } from './physics.js';
-import { initRender, drawFrame, fitCanvas, getCanvas } from './render.js';
+import { initRender, drawFrame, fitCanvas, getCanvas, bumpZoom } from './render.js';
 import { initInput } from './input.js';
 import { spawnFlash, spawnParticles, addPopup, spawnAmbient, spawnConfetti, triggerShake } from './effects.js';
 import { initMascot, mascotSay } from './mascot.js';
@@ -19,6 +19,8 @@ import { checkAchievements } from './achievements.js';
 import { evaluateDailyOnLoad, renderDaily, getDailyChallenge } from './daily.js';
 import { renderBlobdex } from './blobdex.js';
 import { loadLanguage } from './i18n.js';
+import { audio } from './audio.js';
+import { initShare, openShareSheet } from './share.js';
 
 let lastFrame = 0;
 let gameStarted = false;
@@ -94,11 +96,23 @@ function setupBootScreen() {
     if (!state.profile.createdAt) state.profile.createdAt = Date.now();
     state.profile.lastPlayed = Date.now();
     saveAll();
+    // Audio MUST be initialized inside a user gesture for iOS/Safari
+    audio.init();
+    audio.setMusicEnabled(state.settings.musicEnabled !== false);
+    audio.setSfxEnabled(state.settings.sfxEnabled !== false);
+    audio.click();
+    setTimeout(() => audio.startMusic(), 600);
     boot.classList.add('fadeOut');
     setTimeout(() => {
       boot.classList.add('hidden');
       app.classList.remove('hidden');
-      startGame();
+      try {
+        startGame();
+        markInitComplete();
+      } catch (e) {
+        console.error('startGame failed:', e);
+        showError('Failed to start the game: ' + (e.message || e));
+      }
     }, 400);
   }
   start.addEventListener('click', () => go(false));
@@ -122,10 +136,12 @@ function startGame() {
   const canvas = getCanvas();
   initInput(canvas, {
     onDrop: () => {
+      audio.drop();
       if (state.dropCount === 1) advanceTutorialOn('firstDrop');
       checkAfterAction();
     },
     onPower: (k) => {
+      audio.power(k);
       if (k === 'upgrade') advanceTutorialOn('firstUpgrade');
       refreshPowers();
       checkAfterAction();
@@ -157,9 +173,17 @@ function startGame() {
 
   // Pause when tab hidden
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden && !state.over) state.paused = true;
-    else if (!state.over && !document.querySelector('#modal.show')) state.paused = false;
+    if (document.hidden && !state.over) {
+      state.paused = true;
+      audio.stopMusic();
+    } else if (!state.over && !document.querySelector('#modal.show')) {
+      state.paused = false;
+      audio.resume();
+      audio.startMusic();
+    }
   });
+
+  initShare();
 
   // Begin loop
   requestAnimationFrame(loop);
@@ -236,7 +260,9 @@ function mergeBlobs(A, B) {
   spawnParticles(mx, my, colors[0], 14 + newTier);
   spawnParticles(mx, my, colors[1], 8 + newTier);
   triggerShake(60 + newTier * 12, newTier >= 7);
+  if (newTier >= 4) bumpZoom(0.03 + Math.min(0.05, newTier * 0.008), 280 + newTier * 20);
   vibrate(CONFIG.VIBRATE.merge);
+  audio.merge(newTier);
 
   // Score
   const now = performance.now();
@@ -269,6 +295,7 @@ function mergeBlobs(A, B) {
     if (state.combo >= 3) {
       vibrate(CONFIG.VIBRATE.combo);
       mascotSay('combo');
+      audio.combo(state.combo);
     }
   }
 
@@ -335,6 +362,7 @@ function addXp(amt) {
         desc: `+${CONFIG.LEVEL_UP_COINS} 🪙`, reward: CONFIG.LEVEL_UP_COINS
       });
       mascotSay('newTier');
+      audio.levelUp();
       refreshPowers();
     } else { state.playerXp = 0; break; }
   }
@@ -379,6 +407,7 @@ function handleWin() {
   triggerShake(500, true);
   spawnConfetti(200 * (getCanvas().width / CONFIG.W), 300 * (getCanvas().height / CONFIG.H), 60);
   mascotSay('win');
+  audio.win();
 }
 
 // =================================================================
@@ -419,6 +448,8 @@ function gameOver() {
   saveAll();
   vibrate([60, 30, 60, 30, 120]);
   mascotSay('over');
+  audio.gameOver();
+  audio.stopMusic();
   // Submit to leaderboard
   if (state.score > 0) submitScore(state.score, state.stageId).catch(() => {});
   setTimeout(() => {
@@ -429,6 +460,7 @@ function gameOver() {
       stage: state.stageId,
       onPlayAgain: () => {
         startNewRun(false);
+        audio.startMusic();
       },
       onExit: () => {
         // Show leaderboard panel
@@ -575,23 +607,46 @@ function setWeatherForStage() {
 }
 
 // =================================================================
-// CRASH HANDLER
+// CRASH HANDLER — only fatal init errors trigger the overlay
 // =================================================================
+let gameDidInit = false;
+const BENIGN_PATTERNS = [
+  /ResizeObserver loop/i,
+  /^Script error\.?$/,
+  /Non-Error promise rejection/i,
+  /ChunkLoadError/i,
+  /load.*chunk/i
+];
+
 function setupCrashHandler() {
   window.addEventListener('error', e => {
-    console.error('Global error:', e.message);
-    showError('Oops, something broke. Reload to continue.');
+    const msg = (e && e.message) || '';
+    if (BENIGN_PATTERNS.some(re => re.test(msg))) {
+      // Benign — ignore. These do not warrant a user-facing error.
+      console.warn('[Blobverse] Ignored benign error:', msg);
+      return;
+    }
+    console.error('[Blobverse] error:', msg, e.error || '');
+    // Only show overlay if game never finished initializing.
+    // After init, individual subsystems handle their own errors.
+    if (!gameDidInit) {
+      showError(`Init error: ${msg || 'unknown'}\n\nTry reloading. If it persists, clear site data in your browser settings.`);
+    }
   });
   window.addEventListener('unhandledrejection', e => {
-    console.error('Unhandled rejection:', e.reason);
+    console.warn('[Blobverse] Promise rejection:', e.reason);
+    // Promise rejections are non-fatal by default. Don't show overlay.
   });
 }
+
 function showError(msg) {
   const ov = document.getElementById('errOverlay');
   const m = document.getElementById('errMsg');
   if (m) m.textContent = msg || 'Something broke.';
   if (ov) ov.classList.add('show');
 }
+
+function markInitComplete() { gameDidInit = true; }
 
 // Boot it
 boot();

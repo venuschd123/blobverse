@@ -40,7 +40,9 @@ export async function submitScore(score, stage) {
     };
     const { error } = await supabase.from('scores').insert(payload);
     if (error) {
-      console.warn('Supabase insert failed:', error);
+      console.warn('[Blobverse] Supabase insert failed:', error.message, error);
+      // Most common cause: SQL setup not run, or RLS policy too restrictive.
+      // We silently fall back to local but log loudly for the developer.
       return submitLocal(score, stage);
     }
     submitLocal(score, stage); // also keep local mirror
@@ -142,7 +144,11 @@ export function renderLeaderboard(sideBody, scope = 'all') {
     const list = document.getElementById('lbList');
     if (!list) return;
     if (!rows || rows.length === 0) {
-      list.innerHTML = `<div class="empty-state">No scores yet — be the first to submit!<br><br>End a run with a score above 0 to appear here.</div>`;
+      if (usingSupabase) {
+        list.innerHTML = `<div class="empty-state">No scores yet — be the first to submit!<br><br>End a run with a score above 0 to appear here.</div>`;
+      } else {
+        list.innerHTML = `<div class="empty-state">No scores yet on this device.<br><br>To enable the global leaderboard, paste your Supabase keys into <code style="background:rgba(255,255,255,0.08);padding:2px 5px;border-radius:4px;">js/supabase-config.js</code> in your repo and reload.</div>`;
+      }
       return;
     }
     list.innerHTML = rows.map((r, i) => {

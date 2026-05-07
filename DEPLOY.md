@@ -77,6 +77,8 @@ Wait ~30 seconds for files to finish uploading. You should now see `index.html`,
 
 # PART 2 — Set Up Global Leaderboard with Supabase (10 min)
 
+> **Note:** Supabase changed their dashboard UI in 2025. This guide reflects the CURRENT layout.
+
 ## Step 1: Create a Supabase account
 
 1. Go to **[supabase.com](https://supabase.com)**
@@ -90,13 +92,13 @@ Wait ~30 seconds for files to finish uploading. You should now see `index.html`,
 1. Click the green **"New project"** button
 2. **Organization:** leave default (your username)
 3. **Name:** `blobverse`
-4. **Database Password:** click the **"Generate a password"** link, then copy it somewhere safe (you won't need it for this guide, but you'll want it eventually)
+4. **Database Password:** click the **"Generate a password"** link, then copy it somewhere safe
 5. **Region:** pick the one closest to you (e.g., `East US`, `West EU`, `Southeast Asia`)
 6. **Pricing Plan:** Free is selected by default. Leave it.
 7. Click **"Create new project"**
-8. Wait ~1-2 minutes for it to set up. You'll see a progress screen.
+8. Wait ~1-2 minutes for it to set up.
 
-## Step 3: Create the leaderboard table
+## Step 3: Create the leaderboard table (the SQL step)
 
 1. Once your project is ready, click the **SQL editor** icon in the left sidebar (looks like `</>`)
 2. Click **"New query"** at the top
@@ -114,9 +116,11 @@ create table if not exists scores (
 
 alter table scores enable row level security;
 
+drop policy if exists "anyone can read" on scores;
 create policy "anyone can read" on scores
   for select using (true);
 
+drop policy if exists "anyone can insert" on scores;
 create policy "anyone can insert" on scores
   for insert with check (
     char_length(name) between 1 and 14
@@ -131,14 +135,30 @@ create index if not exists scores_score_idx on scores (score desc);
 4. Click the green **"Run"** button (bottom-right of the editor)
 5. You should see "Success. No rows returned" at the bottom. Done.
 
-## Step 4: Get your Supabase keys
+> **Verify the table exists:** click the table-icon in the left sidebar → you should see "scores" in the list. If yes, the SQL worked.
 
-1. In the left sidebar, click the **gear/settings icon** at the bottom
-2. Click **"API"** in the settings sub-menu
-3. You'll see two values you need:
-   - **Project URL** — looks like `https://abcdefghijk.supabase.co`
-   - **Project API keys** → **`anon` `public`** — a very long string starting with `eyJ...`
-4. Keep this page open — you'll need both values in the next step.
+## Step 4: Get your Supabase keys (the new UI)
+
+The Supabase UI changed in 2025. Both old and new keys work; here's how to get them either way.
+
+### Get your Project URL (1 minute)
+
+1. In the left sidebar, scroll to the bottom and click the **gear/settings icon**
+2. Click **"API"** under "Configuration"
+3. You'll see "Project URL" near the top — it looks like `https://abcdefghijk.supabase.co`
+4. Copy that URL.
+
+### Get your anon (public) key — RECOMMENDED (1 minute)
+
+1. Still in Settings, click **"API Keys"** in the left sub-menu
+2. You'll see two tabs: **"Publishable and secret API keys"** (the NEW format) and **"Legacy anon, service_role API keys"**
+3. **Click the "Legacy anon, service_role API keys" tab.** ← This is what we want.
+4. You'll see a row labeled **"anon public"** with a long key starting with `eyJhbGciOi...`
+5. Click the **Copy** button next to it.
+
+> **Why use the legacy key instead of the new "publishable" one?** The legacy `anon` key is a standard JWT that's been around for years and is what this game's code is tested with. The new `sb_publishable_*` keys also work but are newer and less battle-tested. Once you're up and running, you can switch to the new key if you want.
+
+> **NEVER copy your secret/service_role key into the game.** That key bypasses security. It belongs on a server, never in browser code that anyone can view.
 
 ## Step 5: Paste keys into your game
 
@@ -172,7 +192,7 @@ create index if not exists scores_score_idx on scores (score desc);
 
 1. GitHub Pages re-deploys automatically when you change files. **Wait 1-2 minutes.**
 2. Reload your game URL (`https://YOUR-USERNAME.github.io/blobverse/`)
-3. Hard refresh: press **Ctrl+Shift+R** (Windows) or **Cmd+Shift+R** (Mac) — this clears the cache.
+3. **Hard refresh:** Ctrl+Shift+R (Windows) / Cmd+Shift+R (Mac) — clears the cache so you get the latest version
 4. Open the **🏆 Ranks** panel in the game
 5. You should see "🌍 Global leaderboard" at the bottom (instead of "📁 Local leaderboard")
 6. Play a run, end it, and your score will be submitted to the global database. 🎉

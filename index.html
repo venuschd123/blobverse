@@ -130,6 +130,7 @@
       <h3>Something blew up.</h3>
       <p id="errMsg">Click below to restart.</p>
       <button onclick="location.reload()">Reload</button>
+      <button onclick="(async()=>{try{const rs=await navigator.serviceWorker?.getRegistrations();if(rs)for(const r of rs)await r.unregister();const ks=await caches.keys();for(const k of ks)await caches.delete(k);}catch(e){}localStorage.clear();location.reload();})()" style="margin-left:8px;background:#fbbf24;color:#451a03;">Clear Cache &amp; Reload</button>
     </div>
   </div>
 

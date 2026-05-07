@@ -9,9 +9,20 @@ let ctx = null;
 let dpr = 1;
 let scaleX = 1;
 let scaleY = 1;
+let zoomT = 0;       // ms when zoom punch ends
+let zoomAmt = 0;     // current zoom amount
+let zoomStart = 0;
+let zoomDuration = 0;
 
 export function getScale() { return { scaleX, scaleY }; }
 export function getCanvas() { return canvas; }
+
+export function bumpZoom(amount = 0.04, duration = 280) {
+  zoomAmt = amount;
+  zoomStart = performance.now();
+  zoomDuration = duration;
+  zoomT = zoomStart + duration;
+}
 
 export function initRender() {
   canvas = document.getElementById('stage');
@@ -40,7 +51,19 @@ export function drawFrame(now) {
     sx = (Math.random() - 0.5) * 4 * m * scaleX;
     sy = (Math.random() - 0.5) * 4 * m * scaleY;
   }
+  // Camera zoom punch
+  let zoom = 1;
+  if (now < zoomT && !state.settings.reducedMotion) {
+    const t = (now - zoomStart) / zoomDuration;
+    // ease-out punch: starts big, decays
+    zoom = 1 + zoomAmt * (1 - t) * Math.cos(t * Math.PI * 0.5);
+  }
   ctx.save();
+  if (zoom !== 1) {
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    ctx.scale(zoom, zoom);
+    ctx.translate(-canvas.width / 2, -canvas.height / 2);
+  }
   ctx.translate(sx, sy);
   for (const b of state.bodies) drawBlob(b, now);
   drawFlashes();
