@@ -185,12 +185,56 @@ function startGame() {
 
   initShare();
 
+  // ---- v1.1.2 migration: starter gift + best-score backfill ----
+  applyV112Migration();
+
   // Begin loop
   requestAnimationFrame(loop);
 
   // Tutorial
   setTimeout(() => maybeStartTutorial(), 600);
   setTimeout(() => mascotSay('idle'), 2200);
+}
+
+function applyV112Migration() {
+  // One-time grant: 3 of each basic power-up so existing players can actually use the buttons
+  if (!state.gotV11Gift) {
+    state.starterPowers.bomb = (state.starterPowers.bomb || 0) + 3;
+    state.starterPowers.freeze = (state.starterPowers.freeze || 0) + 3;
+    state.starterPowers.magnet = (state.starterPowers.magnet || 0) + 3;
+    // Also grant for current run (already started)
+    state.powers.bomb = (state.powers.bomb || 0) + 3;
+    state.powers.freeze = (state.powers.freeze || 0) + 3;
+    state.powers.magnet = (state.powers.magnet || 0) + 3;
+    state.gotV11Gift = true;
+    saveAll();
+    refreshPowers();
+    setTimeout(() => {
+      showAchievementToast({
+        icon: '🎁',
+        label: 'WELCOME GIFT',
+        name: '+3 Bomb · +3 Freeze · +3 Magnet',
+        desc: 'Thanks for testing v1.1!'
+      });
+    }, 1800);
+  }
+
+  // One-time backfill: submit existing best score to global leaderboard if connected
+  if (isUsingGlobal() && state.best > 0 && !state.bestSubmittedToGlobal) {
+    setTimeout(async () => {
+      const r = await submitScore(state.best, state.bestStage || 1, { force: true });
+      if (r && r.ok && r.global) {
+        state.bestSubmittedToGlobal = true;
+        saveAll();
+        showAchievementToast({
+          icon: '🏆',
+          label: 'BACKFILLED',
+          name: `Best score on the global board!`,
+          desc: `${state.best.toLocaleString()} pts · stage ${state.bestStage || 1}`
+        });
+      }
+    }, 3000);
+  }
 }
 
 function startNewRun(initial) {
@@ -451,7 +495,18 @@ function gameOver() {
   audio.gameOver();
   audio.stopMusic();
   // Submit to leaderboard
-  if (state.score > 0) submitScore(state.score, state.stageId).catch(() => {});
+  if (state.score > 0) {
+    submitScore(state.score, state.stageId).then(r => {
+      if (r && r.ok && r.global) {
+        showAchievementToast({
+          icon: '🌍',
+          label: 'SUBMITTED',
+          name: 'Score on global leaderboard!',
+          desc: `${state.score.toLocaleString()} pts`
+        });
+      }
+    }).catch(() => {});
+  }
   setTimeout(() => {
     showGameOverModal({
       score: state.score,
@@ -507,6 +562,10 @@ function loop(now) {
     drawFrame(now);
     rotateStatus(now);
     updateComboMeter(now);
+    // Music intensity climbs with score and current combo
+    const scoreI = Math.min(1, state.score / 5000);
+    const comboI = Math.min(1, state.combo / 6);
+    audio.setIntensity(Math.max(scoreI, comboI));
   } catch (e) {
     console.error(e);
     showError('A render error occurred. Reload to continue.');
@@ -573,9 +632,19 @@ function activatePower(k) {
   const lockMap = { swap: 5, upgrade: 10 };
   if (lockMap[k] && state.playerLevel < lockMap[k]) {
     showAchievementToast({ icon: '🔒', label: 'LOCKED', name: `Reach Level ${lockMap[k]}`, desc: 'Keep playing to unlock!' });
+    audio.click();
     return;
   }
-  if ((state.powers[k] || 0) <= 0) return;
+  if ((state.powers[k] || 0) <= 0) {
+    showAchievementToast({
+      icon: '🪙',
+      label: 'OUT OF STOCK',
+      name: `${k.charAt(0).toUpperCase() + k.slice(1)} is empty`,
+      desc: 'Earn from 🎁 Daily rewards or buy in 🛍️ Shop'
+    });
+    audio.click();
+    return;
+  }
   if (k === 'freeze') {
     state.freezeUntil = performance.now() + CONFIG.FREEZE_DURATION;
     state.powers.freeze--;

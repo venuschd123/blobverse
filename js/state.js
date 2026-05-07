@@ -88,6 +88,8 @@ export const state = {
   questActive: [],
   questCompleted: [],
   hasSeenTutorial: false,
+  bestSubmittedToGlobal: false,
+  gotV11Gift: false,
 
   // Settings
   settings: {

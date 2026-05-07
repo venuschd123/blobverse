@@ -23,9 +23,9 @@ export function initLeaderboard() {
 
 export function isUsingGlobal() { return usingSupabase; }
 
-export async function submitScore(score, stage) {
+export async function submitScore(score, stage, opts = {}) {
   const now = Date.now();
-  if (now - state.lastLeaderboardSubmit < CONFIG.LEADERBOARD_MIN_SUBMIT_MS) {
+  if (!opts.force && now - state.lastLeaderboardSubmit < CONFIG.LEADERBOARD_MIN_SUBMIT_MS) {
     return { ok: false, reason: 'rate' };
   }
   if (score <= 0 || !state.profile.name) return { ok: false, reason: 'invalid' };
@@ -41,14 +41,13 @@ export async function submitScore(score, stage) {
     const { error } = await supabase.from('scores').insert(payload);
     if (error) {
       console.warn('[Blobverse] Supabase insert failed:', error.message, error);
-      // Most common cause: SQL setup not run, or RLS policy too restrictive.
-      // We silently fall back to local but log loudly for the developer.
       return submitLocal(score, stage);
     }
+    console.log('[Blobverse] Score submitted to global leaderboard:', payload.score);
     submitLocal(score, stage); // also keep local mirror
-    return { ok: true };
+    return { ok: true, global: true };
   } catch (e) {
-    console.warn('submitScore error:', e);
+    console.warn('[Blobverse] submitScore error:', e);
     return submitLocal(score, stage);
   }
 }

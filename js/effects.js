@@ -4,21 +4,23 @@
 import { state } from './state.js';
 
 export function spawnParticles(x, y, color, count = 14) {
-  for (let i = 0; i < count; i++) {
+  // v1.1.2: bumped 1.5x for more visual punch on every merge
+  const realCount = Math.round(count * 1.5);
+  for (let i = 0; i < realCount; i++) {
     const ang = Math.random() * Math.PI * 2;
-    const sp = 1.5 + Math.random() * 4;
+    const sp = 1.5 + Math.random() * 5;
     state.particles.push({
       x, y,
       vx: Math.cos(ang) * sp,
-      vy: Math.sin(ang) * sp - 0.5,
+      vy: Math.sin(ang) * sp - 0.8,
       life: 1,
-      size: 2 + Math.random() * 3,
+      size: 2 + Math.random() * 4,
       color
     });
   }
   // Cap to prevent memory issues
-  if (state.particles.length > 500) {
-    state.particles.splice(0, state.particles.length - 500);
+  if (state.particles.length > 600) {
+    state.particles.splice(0, state.particles.length - 600);
   }
 }
 

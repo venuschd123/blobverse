@@ -31,6 +31,8 @@ export function saveAll() {
       questActive: state.questActive,
       questCompleted: state.questCompleted,
       hasSeenTutorial: state.hasSeenTutorial,
+      bestSubmittedToGlobal: state.bestSubmittedToGlobal,
+      gotV11Gift: state.gotV11Gift,
       v: 1
     };
     localStorage.setItem(CONFIG.SAVE_KEY, JSON.stringify(payload));
@@ -68,6 +70,8 @@ export function loadAll() {
     if (Array.isArray(d.questActive)) state.questActive = d.questActive;
     if (Array.isArray(d.questCompleted)) state.questCompleted = d.questCompleted;
     if (typeof d.hasSeenTutorial === 'boolean') state.hasSeenTutorial = d.hasSeenTutorial;
+    if (typeof d.bestSubmittedToGlobal === 'boolean') state.bestSubmittedToGlobal = d.bestSubmittedToGlobal;
+    if (typeof d.gotV11Gift === 'boolean') state.gotV11Gift = d.gotV11Gift;
     return true;
   } catch (e) {
     console.warn('Load failed:', e);

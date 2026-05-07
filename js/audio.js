@@ -162,7 +162,11 @@ class AudioEngine {
   }
 
   // ============== AMBIENT MUSIC ==============
-  // Slow evolving cosmic drone. Three sine voices, slow LFO, lowpass.
+  // Layered cosmic music that evolves with gameplay:
+  //   - 3 sine drones (root + 5th + octave) — always present
+  //   - Slow bass pulse every ~2s — like a heartbeat
+  //   - Sparse pentatonic melody every ~10s — random notes, gentle
+  //   - All voices respond to game intensity (passed in via setIntensity)
   startMusic() {
     if (!this.ctx || !this.musicEnabled || this.musicVoice) return;
     const t = this.ctx.currentTime;
@@ -194,7 +198,7 @@ class AudioEngine {
 
     const g = this.ctx.createGain();
     g.gain.setValueAtTime(0.0001, t);
-    g.gain.linearRampToValueAtTime(0.18, t + 2.5);
+    g.gain.linearRampToValueAtTime(0.22, t + 2.5);
 
     o1.connect(filter); o2.connect(filter); o3.connect(filter);
     filter.connect(g);
@@ -202,9 +206,98 @@ class AudioEngine {
 
     o1.start(t); o2.start(t); o3.start(t); lfo.start(t); filterLfo.start(t);
     this.musicVoice = { o1, o2, o3, lfo, filterLfo, g, filter };
+    this.intensity = 0;
+
+    // Schedule recurring layers
+    this._scheduleBassPulse();
+    this._scheduleMelody();
+  }
+
+  // Game can call this to make music more energetic (0..1 range)
+  setIntensity(v) {
+    this.intensity = Math.max(0, Math.min(1, v));
+  }
+
+  _scheduleBassPulse() {
+    if (!this.musicVoice || !this.musicEnabled) return;
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const o = this.ctx.createOscillator();
+    const g = this.ctx.createGain();
+    o.type = 'sine';
+    // Pulse on root or octave depending on intensity
+    o.frequency.value = (this.intensity > 0.5 ? 110 : 55);
+    const peak = 0.18 + this.intensity * 0.15;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(peak, t + 0.04);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.45);
+    o.connect(g);
+    g.connect(this.musicBus);
+    try { o.start(t); o.stop(t + 0.5); } catch (e) {}
+    // Faster pulse when game is intense
+    const wait = 2400 - this.intensity * 1200 + Math.random() * 400;
+    this.bassTimer = setTimeout(() => this._scheduleBassPulse(), wait);
+  }
+
+  _scheduleMelody() {
+    if (!this.musicVoice || !this.musicEnabled) return;
+    if (!this.ctx) return;
+    // A minor pentatonic, two octaves
+    const scale = [220, 261.63, 293.66, 329.63, 392.0, 440, 523.25, 587.33, 659.25];
+    const note = scale[Math.floor(Math.random() * scale.length)];
+    const t = this.ctx.currentTime;
+
+    // Two-tone bell: fundamental + octave at lower volume
+    const o1 = this.ctx.createOscillator();
+    const g1 = this.ctx.createGain();
+    o1.type = 'sine';
+    o1.frequency.value = note;
+    const peak = 0.10 + this.intensity * 0.06;
+    g1.gain.setValueAtTime(0.0001, t);
+    g1.gain.exponentialRampToValueAtTime(peak, t + 0.08);
+    g1.gain.exponentialRampToValueAtTime(0.0001, t + 1.6);
+    o1.connect(g1); g1.connect(this.musicBus);
+
+    const o2 = this.ctx.createOscillator();
+    const g2 = this.ctx.createGain();
+    o2.type = 'triangle';
+    o2.frequency.value = note * 2;
+    g2.gain.setValueAtTime(0.0001, t);
+    g2.gain.exponentialRampToValueAtTime(peak * 0.5, t + 0.1);
+    g2.gain.exponentialRampToValueAtTime(0.0001, t + 1.2);
+    o2.connect(g2); g2.connect(this.musicBus);
+
+    try {
+      o1.start(t); o1.stop(t + 1.8);
+      o2.start(t); o2.stop(t + 1.4);
+    } catch (e) {}
+
+    // Sometimes add a quick second note (creates sense of phrase)
+    if (Math.random() < 0.4) {
+      setTimeout(() => {
+        if (!this.musicVoice || !this.musicEnabled || !this.ctx) return;
+        const t2 = this.ctx.currentTime;
+        const idx = scale.indexOf(note);
+        const next = scale[Math.max(0, Math.min(scale.length - 1, idx + (Math.random() < 0.5 ? -1 : 1)))];
+        const o = this.ctx.createOscillator();
+        const g = this.ctx.createGain();
+        o.type = 'sine'; o.frequency.value = next;
+        g.gain.setValueAtTime(0.0001, t2);
+        g.gain.exponentialRampToValueAtTime(peak * 0.7, t2 + 0.06);
+        g.gain.exponentialRampToValueAtTime(0.0001, t2 + 1.0);
+        o.connect(g); g.connect(this.musicBus);
+        try { o.start(t2); o.stop(t2 + 1.1); } catch (e) {}
+      }, 300 + Math.random() * 200);
+    }
+
+    // Next note in 5-12s, faster as intensity increases
+    const wait = (5000 + Math.random() * 7000) - this.intensity * 3000;
+    this.melodyTimer = setTimeout(() => this._scheduleMelody(), wait);
   }
 
   stopMusic() {
+    if (this.melodyTimer) { clearTimeout(this.melodyTimer); this.melodyTimer = null; }
+    if (this.bassTimer) { clearTimeout(this.bassTimer); this.bassTimer = null; }
     if (!this.musicVoice) return;
     const t = this.ctx.currentTime;
     try {

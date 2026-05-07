@@ -1,5 +1,5 @@
 // Blobverse Service Worker — offline play
-const VERSION = 'blobverse-v1.1.1';
+const VERSION = 'blobverse-v1.1.2';
 const CORE = [
   './',
   './index.html',

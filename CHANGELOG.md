@@ -2,6 +2,21 @@
 
 All notable changes to Blobverse.
 
+## [1.1.2] — UX fixes + richer music + global backfill
+
+### Fixed
+- **Power-ups felt broken.** Tapping a power-up button with 0 stock now shows a clear toast: *"OUT OF STOCK — Earn from Daily rewards or buy in Shop"* instead of doing nothing silently.
+- **Existing high scores never reached the global leaderboard.** When the game now loads with a connected Supabase and a non-zero best score, it submits that score once automatically and shows a "BACKFILLED" toast. Subsequent loads don't re-submit.
+- **No feedback on successful submission.** Game over now shows a "🌍 SUBMITTED — Score on global leaderboard!" toast when a fresh score lands on the global board.
+
+### Added
+- **One-time welcome gift.** All existing players get +3 Bomb / +3 Freeze / +3 Magnet on first launch of v1.1.2 so the power-up tray is actually usable.
+- **Richer music.** The ambient drone now has a slow bass pulse (~2s heartbeat) and sparse pentatonic melody motifs. Music intensity now responds to game state: score and combo levels make the bass pulse faster and the melody more frequent.
+- **Bigger merge particles.** Particle count per merge bumped 1.5×, with a wider spread arc.
+- Service worker version bumped to v1.1.2.
+
+---
+
 ## [1.1.0] — Crash fix + Audio + Juice
 
 ### Fixed
