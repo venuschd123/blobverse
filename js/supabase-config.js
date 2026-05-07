@@ -31,8 +31,8 @@
 //
 // =================================================================
 
-export const SUPABASE_URL = "";          // e.g. "https://zofbqhloihbcoqjgtsyi.supabase.co"
-export const SUPABASE_ANON_KEY = "";     // long JWT starting with eyJ...
+export const SUPABASE_URL = "https://zofbqhloihbcoqjgtsyi.supabase.co";          // e.g. "https://zofbqhloihbcoqjgtsyi.supabase.co"
+export const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvZmJxaGxvaWhiY29xamd0c3lpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODA3NjEzNywiZXhwIjoyMDkzNjUyMTM3fQ.HVeNqOXoMvMwQDyX6a8yizs5ZDyi8h6xvjiZV-3kGSA";     // long JWT starting with eyJ...
 
 // =================================================================
 // ONE-TIME SQL SETUP — run this in Supabase SQL Editor exactly once.
