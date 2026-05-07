@@ -12,7 +12,7 @@
 // If you leave these empty, the game runs perfectly on a LOCAL leaderboard.
 // =================================================================
 
-export const SUPABASE_URL = "https://zofbqhloihbcoqjgtsyi.supabase.co/rest/v1/";          // e.g. "https://abcdefg.supabase.co"
+export const SUPABASE_URL = "https://zofbqhloihbcoqjgtsyi.supabase.co";          // e.g. "https://abcdefg.supabase.co"
 export const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvZmJxaGxvaWhiY29xamd0c3lpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwNzYxMzcsImV4cCI6MjA5MzY1MjEzN30.qddh_qnvFaYGp57OkmH-0mgXxmd82Q0bGZDNUDrnzI8";     // long string starting with eyJ...
 
 // Once you paste your keys, also run this SQL in your Supabase project (SQL Editor):
