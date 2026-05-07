@@ -1,0 +1,18 @@
+[
+  { "id": "drop10",     "icon": "💧", "text": "Drop <b>10 blobs</b>",         "stat": "dropCount",   "target": 10,    "reward": 15 },
+  { "id": "drop50",     "icon": "💧", "text": "Drop <b>50 blobs</b>",         "stat": "dropCount",   "target": 50,    "reward": 30 },
+  { "id": "merge5",     "icon": "✨", "text": "Merge <b>5 blobs</b>",         "stat": "mergeCount",  "target": 5,     "reward": 15 },
+  { "id": "merge20",    "icon": "✨", "text": "Merge <b>20 blobs</b>",        "stat": "mergeCount",  "target": 20,    "reward": 30 },
+  { "id": "merge50",    "icon": "✨", "text": "Merge <b>50 blobs</b>",        "stat": "mergeCount",  "target": 50,    "reward": 60 },
+  { "id": "score300",   "icon": "⭐", "text": "Score <b>300 points</b>",      "stat": "score",       "target": 300,   "reward": 20 },
+  { "id": "score1500",  "icon": "⭐", "text": "Score <b>1,500 points</b>",    "stat": "score",       "target": 1500,  "reward": 50 },
+  { "id": "score5000",  "icon": "⭐", "text": "Score <b>5,000 points</b>",    "stat": "score",       "target": 5000,  "reward": 120 },
+  { "id": "frog3",      "icon": "🐸", "text": "Make <b>3 Frogs</b>",          "stat": "tier:3",      "target": 3,     "reward": 30 },
+  { "id": "cat1",       "icon": "🐱", "text": "Make a <b>Cat</b>",            "stat": "tier:4",      "target": 1,     "reward": 25 },
+  { "id": "dog1",       "icon": "🐶", "text": "Make a <b>Dog</b>",            "stat": "tier:5",      "target": 1,     "reward": 40 },
+  { "id": "combo3",     "icon": "🔥", "text": "Get a <b>3-combo</b>",         "stat": "maxCombo",    "target": 3,     "reward": 35 },
+  { "id": "combo5",     "icon": "⚡", "text": "Get a <b>5-combo</b>",         "stat": "maxCombo",    "target": 5,     "reward": 80 },
+  { "id": "useBomb",    "icon": "💣", "text": "Use a <b>Bomb</b>",            "stat": "power:bomb",  "target": 1,     "reward": 20 },
+  { "id": "useFreeze",  "icon": "❄️", "text": "Use a <b>Freeze</b>",          "stat": "power:freeze","target": 1,     "reward": 20 },
+  { "id": "useMagnet",  "icon": "🧲", "text": "Use a <b>Magnet</b>",          "stat": "power:magnet","target": 1,     "reward": 20 }
+]

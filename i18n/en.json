@@ -1,0 +1,23 @@
+{
+  "lang": "en",
+  "title": "BLOBVERSE",
+  "tagline": "Drop · Merge · Ascend",
+  "start": "START PLAYING",
+  "guest": "Play as Guest",
+  "scoreLabel": "Score",
+  "bestLabel": "Best",
+  "stage": "Stage",
+  "tapToDrop": "tap anywhere to drop",
+  "gameOver": "GAME OVER",
+  "stageClear": "STAGE CLEAR",
+  "playAgain": "Play Again",
+  "nextStage": "Next Stage",
+  "backToMenu": "Back",
+  "leaderboard": "Leaderboard",
+  "quests": "Quests",
+  "shop": "Shop",
+  "blobdex": "Blobdex",
+  "daily": "Daily",
+  "settings": "Settings",
+  "achievements": "Achievements"
+}

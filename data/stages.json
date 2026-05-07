@@ -1,0 +1,12 @@
+[
+  { "id": 1, "name": "The Jar",            "target": 500,   "gravity": 1.05, "friction": 0.05, "restitution": 0.18, "wallInset": 0,  "weather": null,    "icon": "🫙" },
+  { "id": 2, "name": "Slippery Slope",     "target": 1500,  "gravity": 1.05, "friction": 0.01, "restitution": 0.20, "wallInset": 0,  "weather": "slip",  "icon": "💧" },
+  { "id": 3, "name": "Heavy Hearts",       "target": 3000,  "gravity": 1.30, "friction": 0.05, "restitution": 0.15, "wallInset": 0,  "weather": "heavy", "icon": "🪨" },
+  { "id": 4, "name": "Tight Squeeze",      "target": 5000,  "gravity": 1.10, "friction": 0.05, "restitution": 0.18, "wallInset": 30, "weather": "tight", "icon": "🌀" },
+  { "id": 5, "name": "Bouncy Castle",      "target": 7500,  "gravity": 1.05, "friction": 0.05, "restitution": 0.55, "wallInset": 0,  "weather": "bouncy","icon": "🎈" },
+  { "id": 6, "name": "Anti-Gravity",       "target": 10000, "gravity": 1.05, "friction": 0.05, "restitution": 0.18, "wallInset": 0,  "weather": "flip",  "icon": "🌌" },
+  { "id": 7, "name": "The Pit",            "target": 14000, "gravity": 1.10, "friction": 0.05, "restitution": 0.18, "wallInset": 25, "weather": "deep",  "icon": "🕳️" },
+  { "id": 8, "name": "Ice Floor",          "target": 19000, "gravity": 1.05, "friction": 0.005,"restitution": 0.20, "wallInset": 0,  "weather": "ice",   "icon": "🧊" },
+  { "id": 9, "name": "Storm Mode",         "target": 25000, "gravity": 1.05, "friction": 0.05, "restitution": 0.18, "wallInset": 0,  "weather": "storm", "icon": "🌪️" },
+  { "id": 10,"name": "Cosmic Endless",     "target": 999999,"gravity": 1.05, "friction": 0.05, "restitution": 0.18, "wallInset": 0,  "weather": "cosmic","icon": "🌠" }
+]

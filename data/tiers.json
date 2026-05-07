@@ -1,0 +1,13 @@
+[
+  { "id": 0,  "name": "Pebble",   "r": 14,  "cs": ["#cbd5e1", "#475569"], "emoji": "🪨" },
+  { "id": 1,  "name": "Egg",      "r": 19,  "cs": ["#fef3c7", "#d97706"], "emoji": "🥚" },
+  { "id": 2,  "name": "Tadpole",  "r": 25,  "cs": ["#86efac", "#15803d"], "emoji": "🐛" },
+  { "id": 3,  "name": "Frog",     "r": 32,  "cs": ["#4ade80", "#166534"], "emoji": "🐸" },
+  { "id": 4,  "name": "Cat",      "r": 41,  "cs": ["#fdba74", "#c2410c"], "emoji": "🐱" },
+  { "id": 5,  "name": "Dog",      "r": 51,  "cs": ["#fde68a", "#b45309"], "emoji": "🐶" },
+  { "id": 6,  "name": "Capybara", "r": 62,  "cs": ["#c4b5fd", "#6d28d9"], "emoji": "🦫" },
+  { "id": 7,  "name": "Bear",     "r": 74,  "cs": ["#a16207", "#451a03"], "emoji": "🐻" },
+  { "id": 8,  "name": "Elephant", "r": 87,  "cs": ["#94a3b8", "#334155"], "emoji": "🐘" },
+  { "id": 9,  "name": "Whale",    "r": 102, "cs": ["#60a5fa", "#1e3a8a"], "emoji": "🐳" },
+  { "id": 10, "name": "PLANET",   "r": 130, "cs": ["#f472b6", "#831843"], "emoji": "🪐" }
+]

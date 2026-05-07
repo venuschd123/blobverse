@@ -1,0 +1,20 @@
+{
+  "name": "Blobverse",
+  "short_name": "Blobverse",
+  "description": "Drop. Merge. Ascend the Blobverse.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0c0a1f",
+  "theme_color": "#0c0a1f",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

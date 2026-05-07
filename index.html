@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0c0a1f" />
+  <meta name="description" content="Blobverse — drop, merge, ascend. The infinite blob evolution game." />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Blobverse" />
+  <meta property="og:title" content="Blobverse" />
+  <meta property="og:description" content="Drop. Merge. Ascend the Blobverse." />
+  <meta property="og:type" content="website" />
+
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
+  <link rel="apple-touch-icon" href="assets/icon.svg" />
+
+  <link rel="stylesheet" href="css/reset.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/ui.css" />
+  <link rel="stylesheet" href="css/effects.css" />
+  <link rel="stylesheet" href="css/themes.css" />
+
+  <title>Blobverse — Drop. Merge. Ascend.</title>
+</head>
+<body class="theme-default">
+
+  <!-- ================ BOOT / NAME ENTRY ================ -->
+  <div id="bootScreen" class="boot-screen">
+    <div class="boot-logo">
+      <div class="boot-blob boot-blob-1"></div>
+      <div class="boot-blob boot-blob-2"></div>
+      <div class="boot-blob boot-blob-3"></div>
+      <h1 class="boot-title">BLOBVERSE</h1>
+      <p class="boot-tagline">Drop · Merge · Ascend</p>
+    </div>
+    <div class="boot-form">
+      <label for="playerName" class="boot-label">What's your name, blob master?</label>
+      <input id="playerName" type="text" maxlength="14" placeholder="Enter your name" autocomplete="off" />
+      <button id="btnStart" class="btn btn-primary">START PLAYING</button>
+      <div class="boot-foot">
+        <span id="bootCountry">🌍</span>
+        <button id="btnSkipName" class="btn btn-ghost">Play as Guest</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================ MAIN APP ================ -->
+  <div id="app" class="app hidden">
+
+    <!-- Top bar -->
+    <header class="topbar">
+      <button class="icon-btn" id="btnMenu" aria-label="Menu">☰</button>
+      <div class="hud glass">
+        <div class="stat"><span class="label">Score</span><span class="value" id="scoreVal">0</span></div>
+        <div class="logo">BLOBVERSE<small>★ stage <span id="stageNum">1</span> ★</small></div>
+        <div class="stat right"><span class="label">Best</span><span class="value" id="bestVal">0</span></div>
+      </div>
+      <button class="icon-btn" id="btnPause" aria-label="Pause">⏸</button>
+    </header>
+
+    <!-- Meta row -->
+    <div class="meta-row glass">
+      <div class="coin-pill" title="Coins"><span class="icon coin"></span><span id="coinVal">0</span></div>
+      <div class="coin-pill" title="Stars"><span class="icon star"></span><span id="starVal">0</span></div>
+      <div class="lvl-bar" title="Player Level XP"><div class="fill" id="lvlFill"></div></div>
+      <div class="lvl-pill">LV <span id="lvlVal">1</span></div>
+    </div>
+
+    <!-- Goal banner -->
+    <div class="goal-banner glass" id="goalBanner">
+      <div class="goal-icon" id="goalIcon">⭐</div>
+      <div class="goal-text" id="goalText">Loading goal...</div>
+      <div class="goal-progress" id="goalProgress">0/1</div>
+    </div>
+
+    <!-- Stage area -->
+    <div class="stage-wrap" id="stageWrap">
+      <canvas id="stage"></canvas>
+      <div class="combo-meter"><div class="fill" id="comboFill"></div></div>
+      <div class="combo-badge" id="comboBadge">COMBO</div>
+      <div class="status-strip" id="statusStrip">tap anywhere to drop</div>
+      <div class="danger-glow" id="dangerGlow"></div>
+      <div class="weather-strip" id="weatherStrip"></div>
+      <div class="bubble" id="mascotBubble"></div>
+      <div class="mascot" id="mascot"></div>
+      <div class="modal-veil" id="modal"><div class="modal-card" id="modalCard"></div></div>
+      <div class="tut" id="tut"><div class="tut-card" id="tutCard"></div></div>
+    </div>
+
+    <!-- Power tray -->
+    <div class="powers glass">
+      <button class="power" data-power="bomb" id="pwBomb">
+        <span class="pic">💣</span><span class="name">Bomb</span><span class="stock" id="stockBomb">0</span>
+      </button>
+      <button class="power" data-power="freeze" id="pwFreeze">
+        <span class="pic">❄️</span><span class="name">Freeze</span><span class="stock" id="stockFreeze">0</span>
+      </button>
+      <button class="power" data-power="magnet" id="pwMagnet">
+        <span class="pic">🧲</span><span class="name">Magnet</span><span class="stock" id="stockMagnet">0</span>
+      </button>
+      <button class="power" data-power="swap" id="pwSwap">
+        <span class="pic">🔄</span><span class="name">Swap</span><span class="stock" id="stockSwap">0</span>
+      </button>
+      <button class="power" data-power="upgrade" id="pwUpgrade">
+        <span class="pic">⬆️</span><span class="name">Upgrade</span><span class="stock" id="stockUpgrade">0</span>
+      </button>
+    </div>
+
+    <!-- Chain strip -->
+    <div class="chain glass" id="chain"></div>
+
+    <!-- Bottom nav -->
+    <nav class="bottom-nav glass">
+      <button class="nav-btn" data-panel="leaderboard" id="navLb">🏆<span>Ranks</span></button>
+      <button class="nav-btn" data-panel="quests" id="navQuests">📜<span>Quests</span></button>
+      <button class="nav-btn" data-panel="shop" id="navShop">🛍️<span>Shop</span></button>
+      <button class="nav-btn" data-panel="dex" id="navDex">📖<span>Blobdex</span></button>
+      <button class="nav-btn" data-panel="daily" id="navDaily">🎁<span>Daily</span></button>
+    </nav>
+  </div>
+
+  <!-- Toast stack -->
+  <div class="toast-stack" id="toastStack"></div>
+
+  <!-- Crash overlay -->
+  <div class="err-overlay" id="errOverlay">
+    <div class="box">
+      <h3>Something blew up.</h3>
+      <p id="errMsg">Click below to restart.</p>
+      <button onclick="location.reload()">Reload</button>
+    </div>
+  </div>
+
+  <!-- Side panel (slides from right) -->
+  <aside class="side-panel" id="sidePanel">
+    <div class="side-head">
+      <h2 id="sideTitle">Panel</h2>
+      <button class="icon-btn" id="btnSideClose">✕</button>
+    </div>
+    <div class="side-body" id="sideBody"></div>
+  </aside>
+
+  <!-- ================ DEPENDENCIES ================ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Game scripts (ES modules) -->
+  <script type="module" src="js/main.js"></script>
+
+  <!-- Service worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>

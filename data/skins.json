@@ -1,0 +1,28 @@
+{
+  "skinPacks": [
+    { "id": "default", "name": "Classic",    "desc": "The original blobs",      "preview": "🎨", "cost": 0,    "currency": "coin", "default": true },
+    { "id": "neon",    "name": "Neon",       "desc": "Glowing electric vibes",   "preview": "⚡", "cost": 200,  "currency": "coin" },
+    { "id": "pastel",  "name": "Pastel",     "desc": "Soft and dreamy",          "preview": "🌸", "cost": 200,  "currency": "coin" },
+    { "id": "galaxy",  "name": "Galaxy",     "desc": "Cosmic shimmer",           "preview": "🌌", "cost": 500,  "currency": "coin" },
+    { "id": "pixel",   "name": "Pixel",      "desc": "Retro 8-bit",              "preview": "👾", "cost": 5,    "currency": "star" },
+    { "id": "candy",   "name": "Candy",      "desc": "Sweet sugar tones",        "preview": "🍬", "cost": 10,   "currency": "star" },
+    { "id": "mythic",  "name": "Mythic Gold","desc": "For true champions",       "preview": "👑", "cost": 25,   "currency": "star" }
+  ],
+  "themes": [
+    { "id": "default",  "name": "Default",  "desc": "Purple haze",     "preview": "🌃", "cost": 0,    "currency": "coin", "default": true },
+    { "id": "aquarium", "name": "Aquarium", "desc": "Underwater world","preview": "🐠", "cost": 300,  "currency": "coin" },
+    { "id": "lava",     "name": "Lava",     "desc": "Molten core",     "preview": "🌋", "cost": 300,  "currency": "coin" },
+    { "id": "forest",   "name": "Forest",   "desc": "Deep woods",      "preview": "🌲", "cost": 400,  "currency": "coin" },
+    { "id": "sunset",   "name": "Sunset",   "desc": "Golden hour",     "preview": "🌅", "cost": 500,  "currency": "coin" },
+    { "id": "galaxy",   "name": "Galaxy",   "desc": "Among the stars", "preview": "🌌", "cost": 8,    "currency": "star" },
+    { "id": "mono",     "name": "Mono",     "desc": "Slate and shadow","preview": "🖤", "cost": 5,    "currency": "star" }
+  ],
+  "perks": [
+    { "id": "starter_bomb",   "name": "Bomb Cache",   "desc": "Start every run with +1 Bomb",   "preview": "💣", "cost": 800,  "currency": "coin" },
+    { "id": "starter_freeze", "name": "Freeze Cache", "desc": "Start every run with +1 Freeze", "preview": "❄️", "cost": 800,  "currency": "coin" },
+    { "id": "starter_magnet", "name": "Magnet Cache", "desc": "Start every run with +1 Magnet", "preview": "🧲", "cost": 800,  "currency": "coin" },
+    { "id": "lucky_egg",      "name": "Lucky Egg",    "desc": "5% chance pebble drops as egg",   "preview": "🍀", "cost": 1500, "currency": "coin" },
+    { "id": "double_xp",      "name": "Double XP",    "desc": "+50% XP from every merge",       "preview": "⭐", "cost": 15,   "currency": "star" },
+    { "id": "coin_boost",     "name": "Coin Boost",   "desc": "+25% coins from merges",         "preview": "💰", "cost": 12,   "currency": "star" }
+  ]
+}
